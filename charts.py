@@ -99,31 +99,40 @@ def group_average_chart(labels: list, means: list, counts: list, value_range: tu
     return _apply_layout(fig, height=max(220, 40 * len(labels)), showlegend=False)
 
 
-def ab_compare_chart(question_labels: list, means_a: list, means_b: list, n_a: int, n_b: int, value_range: tuple) -> go.Figure:
-    """Grouped bar comparing two subsets (Group A vs Group B) across questions."""
+def ab_compare_chart(
+    question_labels: list,
+    means_a: list,
+    means_b: list,
+    n_a: int,
+    n_b: int,
+    value_range: tuple,
+    name_a: str = "Group A",
+    name_b: str = "Group B",
+) -> go.Figure:
+    """Grouped bar comparing two named subsets across questions."""
     fig = go.Figure()
     fig.add_trace(
         go.Bar(
-            name=f"Group A (n={n_a})",
+            name=f"{name_a} (n={n_a})",
             y=question_labels,
             x=means_a,
             orientation="h",
             marker_color=theme.COMPARE_A,
             text=[f"{v:.2f}" if v == v else "—" for v in means_a],
             textposition="outside",
-            hovertemplate="%{y} — Group A: %{x:.2f}<extra></extra>",
+            hovertemplate=f"%{{y}} — {name_a}: " + "%{x:.2f}<extra></extra>",
         )
     )
     fig.add_trace(
         go.Bar(
-            name=f"Group B (n={n_b})",
+            name=f"{name_b} (n={n_b})",
             y=question_labels,
             x=means_b,
             orientation="h",
             marker_color=theme.COMPARE_B,
             text=[f"{v:.2f}" if v == v else "—" for v in means_b],
             textposition="outside",
-            hovertemplate="%{y} — Group B: %{x:.2f}<extra></extra>",
+            hovertemplate=f"%{{y}} — {name_b}: " + "%{x:.2f}<extra></extra>",
         )
     )
     lo, hi = value_range

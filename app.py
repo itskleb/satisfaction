@@ -62,9 +62,11 @@ st.markdown(
         background-color: {theme.BRAND_GREEN};
     }}
     [data-testid="stSidebar"] * {{
-        color: #F2F0E6 !important;
+        color: #FFFFFF !important;
         opacity: 1 !important;
     }}
+    /* Exception: text typed/shown inside the white dropdown boxes themselves
+       needs to stay dark, or it becomes invisible on their white background. */
     [data-testid="stSidebar"] [data-baseweb="select"] * {{
         color: {theme.TEXT_PRIMARY} !important;
     }}
@@ -81,6 +83,20 @@ st.markdown(
         border-left: 4px solid {theme.BRAND_GREEN};
         border-radius: 6px;
         padding: 10px 14px;
+    }}
+
+    /* Top header bar */
+    [data-testid="stHeader"] {{
+        background-color: {theme.BRAND_BLUE} !important;
+    }}
+    [data-testid="stHeader"] button {{
+        background-color: transparent !important;
+    }}
+    [data-testid="stHeader"] button span,
+    [data-testid="stHeader"] button p,
+    [data-testid="stHeader"] svg {{
+        color: #FFFFFF !important;
+        fill: #FFFFFF !important;
     }}
     </style>
     """,
@@ -256,25 +272,36 @@ with tab_compare:
 with tab_ab:
     st.markdown("Build two independent subsets from the full dataset (ignoring the sidebar) and compare them directly.")
 
+    show_filters = st.checkbox("Show group filters", value=True, key="ab_show_filters")
+
     all_filter_cols = {**CATEGORICAL_FILTERS, TENURE_COLUMN: "Time in the Program", "Satisfaction Level": "Satisfaction Level (Overall)"}
 
-    def build_subset(prefix: str) -> pd.DataFrame:
-        st.markdown(f"**Group {prefix}**")
+    def build_subset(prefix: str, default_name: str):
+        name = st.text_input(f"Group {prefix} name", value=default_name, key=f"ab_name_{prefix}")
         subset = df.copy()
-        for col, display in all_filter_cols.items():
-            if col not in subset.columns:
-                continue
-            opts = sorted(v for v in df[col].dropna().unique().tolist())
-            chosen = st.multiselect(display, opts, default=[], key=f"ab_{prefix}_{col}")
-            if chosen:
-                subset = subset[subset[col].isin(chosen)]
-        return subset
+        if show_filters:
+            for col, display in all_filter_cols.items():
+                if col not in subset.columns:
+                    continue
+                opts = sorted(v for v in df[col].dropna().unique().tolist())
+                chosen = st.multiselect(display, opts, default=[], key=f"ab_{prefix}_{col}")
+                if chosen:
+                    subset = subset[subset[col].isin(chosen)]
+        else:
+            # Filters are hidden, but keep whatever was already chosen in effect.
+            for col in all_filter_cols:
+                if col not in subset.columns:
+                    continue
+                chosen = st.session_state.get(f"ab_{prefix}_{col}", [])
+                if chosen:
+                    subset = subset[subset[col].isin(chosen)]
+        return subset, name
 
     col_left, col_right = st.columns(2)
     with col_left:
-        subset_a = build_subset("A")
+        subset_a, name_a = build_subset("A", "Group A")
     with col_right:
-        subset_b = build_subset("B")
+        subset_b, name_b = build_subset("B", "Group B")
 
     st.markdown("---")
     group_name3 = st.selectbox("Question group", list(question_choices().keys()), key="ab_group")
@@ -299,7 +326,10 @@ with tab_ab:
             labels = [QUESTIONS[q]["label"] for q in qids]
             means_a = [mean_or_nan(subset_a[numeric_column(q)]) for q in qids]
             means_b = [mean_or_nan(subset_b[numeric_column(q)]) for q in qids]
-            fig = ab_compare_chart(labels, means_a, means_b, len(subset_a), len(subset_b), ranges.pop())
+            fig = ab_compare_chart(
+                labels, means_a, means_b, len(subset_a), len(subset_b), ranges.pop(),
+                name_a=name_a or "Group A", name_b=name_b or "Group B",
+            )
             st.plotly_chart(fig, use_container_width=True)
 
 # ---------------------------------------------------------------------------

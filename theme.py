@@ -12,6 +12,7 @@ scouting.org brand identity guide):
     Scouting America Red     #CE1126
     Scouts BSA Olive (green) #243E2C
     Cub Scouts/Venturing Gold #FCD116
+    Scouting America Blue    #003F87  (Pantone 294)
 
 Chart-safe derivatives (validated: lightness band, chroma floor, CVD
 separation >= 15 dE normal-vision, contrast vs white surface):
@@ -24,6 +25,7 @@ separation >= 15 dE normal-vision, contrast vs white surface):
 BRAND_RED = "#CE1126"
 BRAND_GREEN = "#243E2C"
 BRAND_GOLD = "#FCD116"
+BRAND_BLUE = "#003F87"
 BRAND_CREAM = "#FCFCFB"
 
 # Chart-safe categorical trio (fixed order - never re-cycle).
