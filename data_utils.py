@@ -15,7 +15,7 @@ from questions import (
     satisfaction_band,
 )
 
-DATA_PATH = Path(__file__).parent / "data" / "survey_responses.csv"
+DATA_PATH = Path(__file__).parent / "survey_responses.csv"
 
 
 @st.cache_data

@@ -25,21 +25,22 @@ Program, Satisfaction Level based on the overall satisfaction question).
 
 ## Data
 
-`data/survey_responses.csv` is the exported survey data with Qualtrics'
-value labels applied (so categorical answers like tenure and Likert ratings
-appear as readable text, not numeric codes). To refresh with a new export:
+`survey_responses.csv` (in the same folder as `app.py`) is the exported
+survey data with Qualtrics' value labels applied (so categorical answers
+like tenure and Likert ratings appear as readable text, not numeric codes).
+To refresh with a new export:
 
 1. In Qualtrics, export results as CSV with **"Use choice text"** enabled
    (not numeric values), and download the version **with** the two extra
    header rows Qualtrics adds.
-2. Replace `data/survey_responses.csv` with a version where those two header
+2. Replace `survey_responses.csv` with a version where those two header
    rows are stripped, keeping only the first row (the `Q#` column names) as
    the header. You can do this in Python:
 
    ```python
    import pandas as pd
    df = pd.read_csv("your_export.csv", skiprows=[1, 2])
-   df.to_csv("data/survey_responses.csv", index=False)
+   df.to_csv("survey_responses.csv", index=False)
    ```
 
 3. If new questions are added to the survey, update `questions.py` with
@@ -83,13 +84,17 @@ scouting-dashboard/
 ├── theme.py                # Brand color palette (chart-safe + UI chrome)
 ├── questions.py             # Question metadata: labels, scale types, groups
 ├── data_utils.py            # Data loading & aggregation helpers
-├── data/
-│   └── survey_responses.csv
+├── survey_responses.csv     # Survey data (same folder as app.py)
 ├── .streamlit/
 │   └── config.toml          # Streamlit theme colors
 ├── requirements.txt
 └── README.md
 ```
+
+Everything the app needs (code + data) lives flat in this one folder plus
+the `.streamlit/` theme subfolder that Streamlit itself expects — there are
+no other nested data folders, so pushing this directory as-is to GitHub and
+pointing Streamlit Cloud at `app.py` works without any path adjustments.
 
 ## Color scheme
 
