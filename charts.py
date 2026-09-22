@@ -12,7 +12,22 @@ def _apply_layout(fig, height=340, showlegend=True):
         **theme.PLOTLY_LAYOUT,
         height=height,
         showlegend=showlegend,
-        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="left", x=0),
+        legend=dict(
+            orientation="h",
+            yanchor="bottom",
+            y=1.02,
+            xanchor="left",
+            x=0,
+            # Explicit background + border + font color - without these, the
+            # legend is transparent and some browsers' forced-dark-mode
+            # heuristics mis-guess the text color against it, making legend
+            # labels invisible. An opaque light background makes the correct
+            # (dark) text color unambiguous.
+            bgcolor=theme.SURFACE_LIGHT,
+            bordercolor=theme.GRID_LINE,
+            borderwidth=1,
+            font=dict(color=theme.TEXT_PRIMARY),
+        ),
     )
     fig.update_xaxes(**theme.AXIS_STYLE)
     fig.update_yaxes(**theme.AXIS_STYLE)

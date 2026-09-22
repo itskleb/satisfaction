@@ -42,7 +42,41 @@ st.set_page_config(
 st.markdown(
     f"""
     <style>
+    /* Tell the browser this page manages its own (light) appearance, so
+       Chrome/OS "force dark mode" doesn't auto-invert form controls
+       (dropdowns, text inputs, tags) into black boxes. */
+    :root, .stApp {{ color-scheme: light !important; }}
     .stApp {{ background-color: {theme.SURFACE_LIGHT}; }}
+
+    /* Explicit light backgrounds for form controls - belt-and-suspenders
+       against forced dark mode, which targets inputs/selects specifically. */
+    [data-baseweb="select"] > div,
+    [data-baseweb="input"],
+    [data-baseweb="base-input"],
+    .stTextInput input,
+    .stSelectbox div[data-baseweb="select"],
+    .stMultiSelect div[data-baseweb="select"] {{
+        background-color: #FFFFFF !important;
+        color: {theme.TEXT_PRIMARY} !important;
+    }}
+    [data-baseweb="popover"] {{
+        background-color: #FFFFFF !important;
+    }}
+    [data-baseweb="menu"] {{
+        background-color: #FFFFFF !important;
+    }}
+    [data-baseweb="menu"] * {{
+        color: {theme.TEXT_PRIMARY} !important;
+    }}
+    /* Multiselect tags outside the sidebar (e.g. A/B tab question picker) -
+       use the same brand gold treatment instead of Streamlit's default red. */
+    .stMultiSelect [data-baseweb="tag"] {{
+        background-color: {theme.BRAND_GOLD} !important;
+    }}
+    .stMultiSelect [data-baseweb="tag"] * {{
+        color: {theme.BRAND_GREEN} !important;
+        fill: {theme.BRAND_GREEN} !important;
+    }}
 
     /* Default body text - Streamlit's own theme fades a lot of this to a
        low-contrast gray by default, so force it black everywhere except
