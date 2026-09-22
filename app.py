@@ -43,17 +43,38 @@ st.markdown(
     f"""
     <style>
     .stApp {{ background-color: {theme.SURFACE_LIGHT}; }}
+
+    /* Default body text - Streamlit's own theme fades a lot of this to a
+       low-contrast gray by default, so force it black everywhere except
+       inside the dark green sidebar (handled separately below). */
+    .stApp, .stApp p, .stApp span, .stApp label, .stApp div,
+    .stMarkdown, .stCaption, [data-testid="stCaptionContainer"],
+    .stMarkdown blockquote, .stMarkdown blockquote p,
+    [data-testid="stMetricLabel"], [data-testid="stMetricValue"],
+    [data-testid="stWidgetLabel"] p,
+    .stSelectbox, .stMultiSelect, .stDataFrame, .stTextInput,
+    [data-baseweb="select"] * {{
+        color: {theme.TEXT_PRIMARY} !important;
+        opacity: 1 !important;
+    }}
+
     [data-testid="stSidebar"] {{
         background-color: {theme.BRAND_GREEN};
     }}
     [data-testid="stSidebar"] * {{
         color: #F2F0E6 !important;
+        opacity: 1 !important;
+    }}
+    [data-testid="stSidebar"] [data-baseweb="select"] * {{
+        color: {theme.TEXT_PRIMARY} !important;
     }}
     [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] {{
         background-color: {theme.BRAND_GOLD} !important;
+    }}
+    [data-testid="stSidebar"] .stMultiSelect [data-baseweb="tag"] * {{
         color: {theme.BRAND_GREEN} !important;
     }}
-    h1, h2, h3 {{ color: {theme.BRAND_GREEN}; }}
+    h1, h2, h3 {{ color: {theme.BRAND_GREEN} !important; }}
     div[data-testid="stMetric"] {{
         background-color: white;
         border: 1px solid {theme.GRID_LINE};
@@ -74,7 +95,11 @@ df = load_data()
 st.sidebar.markdown("## 🏕️ Filters")
 st.sidebar.caption("Filters apply to Overview, Question Explorer, and Open-Ended tabs.")
 
-completed_only = st.sidebar.checkbox("Completed responses only", value=True)
+completed_only = st.sidebar.checkbox(
+    "Completed responses only",
+    value=False,
+    help="Off by default so partial/in-progress responses are included in every count and chart.",
+)
 
 filtered = df.copy()
 if completed_only and "Finished" in filtered.columns:

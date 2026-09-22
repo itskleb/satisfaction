@@ -57,8 +57,8 @@ LIKERT_DIVERGING = {
 }
 
 SURFACE_LIGHT = "#FCFCFB"
-TEXT_PRIMARY = "#1F2421"
-TEXT_MUTED = "#5B6660"
+TEXT_PRIMARY = "#000000"
+TEXT_MUTED = "#1A1A1A"
 GRID_LINE = "#E4E2DB"
 
 PLOTLY_LAYOUT = dict(
@@ -68,8 +68,12 @@ PLOTLY_LAYOUT = dict(
     margin=dict(l=10, r=10, t=40, b=10),
 )
 
+# Explicit tick/title font colors - without this Plotly renders axis text in
+# its own faded default gray regardless of the layout font color above.
 AXIS_STYLE = dict(
     gridcolor=GRID_LINE,
     zerolinecolor=GRID_LINE,
     linecolor=GRID_LINE,
+    tickfont=dict(color=TEXT_PRIMARY),
+    title_font=dict(color=TEXT_PRIMARY),
 )
